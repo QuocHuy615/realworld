@@ -2,7 +2,7 @@ name: CI-CD Exercises
 
 on:
   push:
-    branches: [codex/cicd-exercises]
+    branches: [cicd-exercises]
   workflow_dispatch:
 
 permissions:
