@@ -310,6 +310,8 @@ jobs:
     needs: [lint, unit-test, api-test, security-scan]
     runs-on: ubuntu-latest
     steps:
+      - name: Normalize container image name
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
       - name: Checkout code with submodules
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
@@ -369,6 +371,8 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Normalize container image name
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
       - name: Download Docker image artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
@@ -398,6 +402,8 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.docker-push.result == 'success'
     steps:
+      - name: Normalize container image name
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
       - name: Checkout trigger client
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
