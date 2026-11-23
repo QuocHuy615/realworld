@@ -1,5 +1,11 @@
 const config = require('./front/config')
 
+function formatArticleSlug(title) {
+  if (!title) return ''
+  return String(title).toLowerCase().trim().replace(/\s+/g, '-')
+}
+exports.formatArticleSlug = formatArticleSlug
+
 async function deleteOldestForDemo(Model) {
   if (config.isDemo) {
     // Delete the oldest comments to keep data size limited.

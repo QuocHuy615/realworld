@@ -11,6 +11,9 @@ module.exports = {
     'json-summary'
   ],
   coverageThreshold: {
+    './lib.js': {
+      functions: 100
+    },
     global: {
       branches: 80,
       functions: 80,

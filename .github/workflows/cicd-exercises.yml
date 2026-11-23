@@ -1,0 +1,66 @@
+name: CI-CD Exercises
+
+on:
+  push:
+    branches: [codex/cicd-exercises]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.2'
+      - run: npm install --ignore-scripts --legacy-peer-deps --no-audit --no-fund
+      - run: npm run test:unit -- --runInBand
+      - name: Jest Unit Test & Coverage Summary
+        if: always()
+        run: |
+          node - <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          console.log('## Jest Unit Test & Coverage Summary');
+          if (fs.existsSync('coverage/coverage-summary.json')) {
+            const total = JSON.parse(fs.readFileSync('coverage/coverage-summary.json')).total;
+            console.log('| Metric | Covered / Total | Percentage |');
+            console.log('| --- | --- | --- |');
+            for (const metric of ['statements', 'branches', 'functions', 'lines']) {
+              const v = total[metric];
+              console.log(`| ${metric} | ${v.covered} / ${v.total} | ${v.pct}% |`);
+            }
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-report
+          path: test-reports/junit/jest-unit.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
+  api-test:
+    name: API Tests
+    needs: unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.2'
+      - run: npm install --ignore-scripts --legacy-peer-deps --no-audit --no-fund
+      - run: npm rebuild sqlite3
+      - name: Run SuperTest against the real Express API
+        run: node scripts/run-lab-api.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-test-report
+          path: test-reports/junit/jest-api.xml
