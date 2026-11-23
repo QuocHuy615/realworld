@@ -2,6 +2,25 @@ const lib = require('../../lib');
 const config = require('../../front/config');
 
 describe('Unit Tests: Helpers & Utilities (lib.js)', () => {
+  describe('formatArticleSlug', () => {
+    test('should convert title with spaces to lowercase hyphenated slug', () => {
+      expect(lib.formatArticleSlug('Hello World From HCMUS')).toBe('hello-world-from-hcmus');
+    });
+
+    test('should return empty string for falsy input', () => {
+      expect(lib.formatArticleSlug('')).toBe('');
+      expect(lib.formatArticleSlug(null)).toBe('');
+    });
+
+    test('should trim outer whitespace and collapse consecutive whitespace', () => {
+      expect(lib.formatArticleSlug('  Software\t Testing\n Lab  ')).toBe('software-testing-lab');
+    });
+
+    test('should convert a numeric title to a string', () => {
+      expect(lib.formatArticleSlug(123)).toBe('123');
+    });
+  });
+
   describe('validatePositiveInteger', () => {
     test('1. should return true and parsed integer for positive integer number', () => {
       const [val, ok] = lib.validatePositiveInteger(42);
